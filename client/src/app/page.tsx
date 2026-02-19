@@ -7,7 +7,10 @@ export default function Home() {
   const [message2, setMessage2] = useState('')
   const socketRef = useRef<WebSocket | null>(null)
   useEffect(() => {
-    socketRef.current = new WebSocket('ws://127.0.0.1:8000/ws')
+    const apUrl = process.env.NEXT_PUBLIC_API_URL
+    if(apUrl){
+     const api = apUrl.replace('https://', 'wss://').replace('http://', 'ws://')
+      socketRef.current = new WebSocket(`${api}/ws`)
     socketRef.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
       
@@ -16,6 +19,7 @@ export default function Home() {
     }
     return () => {
       socketRef.current?.close()
+    }
     }
   },[])
   return (
